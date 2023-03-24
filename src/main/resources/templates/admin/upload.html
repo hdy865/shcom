@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form th:action="@{/admin/upload}" th:method="post" enctype='multipart/form-data'>
+		<div>
+			<input type="text" name="p_name" placeholder="상품명">
+		</div>
+		<div>
+			<input type="text" name="p_content" placeholder="상품설명">
+		</div>
+		<div>
+			<input type="text" name="p_cost" placeholder="상품가격">
+		</div>
+		<div>
+			<input type="file" class="custom-file-input" name="file" 
+			placeholder="이미지" multiple="multiple">
+		</div>
+		<div>
+		등록한 파일이 여기 보입니다.
+		</div>
+		<button>상품등록</button>
+	</form>
+</body>
+
+<script>
+		$(document).ready(function(e){
+			
+			var regex = new RegExp("(.*?)\.(exe|sh|zip|alz|riff)$");
+			var maxSize = 10485760;//10MB
+			
+			function checkExtension(fileName, fileSize){
+				
+				if(fileSize >= maxSize){
+					alert("파일 사이즈 초과");
+					return false;
+				}
+				
+				if(regex.test(fileName)){
+					alert("해당 종류의 파일은 업로드할 수 없습니다.");
+					return false;
+				}
+				return true;
+			} // 파일의 형식과 종류 검사
+			
+			$(".custom-file-input").on("change", function(){
+				// \\를 기준으로 문자열로 나눈다
+				// .pop() 배열에서 마지막 요소를 제거하고 그 요소를 반환 == 순수 이름만 반환
+				var fileName = $(this).val().split("\\").pop();
+				
+				//새로운 클래스 추가, 
+				$(this).siblings(".custom-file-input").addClass("selected").html(fileName);
+				
+				var formData = new FormData();
+				
+				var inputFile = $(this);//".custom-file-input"
+				
+				var files = inputFile[0].files;
+				
+				var appended = false;
+				
+				for (var i = 0; i < files.length; i++) {
+					
+					if(!checkExtension(files[i].name, files[i].size)){
+						return false;
+					}
+					
+					console.log(files[i]);
+					formData.append("uploadFiles", files[i]);
+					appended = true;
+				}
+				
+				//upload 하지 않는다.
+				if(!appended) {return;}
+				
+				for (var value of formData.values()) {
+					console.log(value);
+				}
+				
+				
+				
+				//실제 업로드 부분
+				//upload ajax
+				$.ajax({
+					url: '/uploadAjax',
+					processData: false,
+					contentType: false,
+					data: formData,
+					type: 'POST',
+					dataType: 'json',
+					success: function(result){
+						console.log(result);
+						showResult(result);
+					},
+					error: function(jqXHR, textStatus, errorThrown){
+						console.log(textStatus);
+					}
+				});//$.ajax
+				
+			});//change e
+			
+			$(".uploadResult ").on("click", "li button", function(e){
+				
+				console.log("delete file");
+				
+				var targetFile = $(this).data("file");
+				
+				var targetLi = $(this).closest("li");
+				
+				$.ajax({
+					url: '/removeFile',
+					data: {fileName: targetFile},
+					dataType: 'text',
+					type: 'POST',
+					success: function(result){
+						alert(result);
+						targetLi.remove();
+					}
+				});//$.ajax
+			});
+			
+			function showResult(uploadResultArr) {
+				
+				var uploadUL = $(".uploadResult ul");
+				
+				var str = "";
+				
+				$(uploadResultArr).each(function(i, obj){
+					
+					str += "<li data-name='"+obj.fileName+"' data-path='"+obj.folderPath+"' data-uuid='"+obj.uuid+"'>";
+					str += " <div>";
+					str += "<button type='button' data-file=\'" + obj.imageURL + "\'"
+					str += "class='btn-warning btn-sm'>X</button><br>";
+					str += "<img src='/display?fileName=" + obj.thumbnailURL + "'>";
+					str += "</div>";
+					str += "</li>";
+				});
+				uploadUL.append(str);
+			}
+			
+			$(".btn-primary").on("click", function(e){
+				e.preventDefault();
+				
+				var str = "";
+				
+				$(".uploadResult li").each(function(i, obj){
+					var target = $(obj);
+					
+					str +="<input type='hidden' name='imageDTOList["+i+"].imgName' value='"+target.data('name')+"'>";
+					str +="<input type='hidden' name='imageDTOList["+i+"].path' value='"+target.data('path')+"'>";
+					str +="<input type='hidden' name='imageDTOList["+i+"].uuid' value='"+target.data('uuid')+"'>";
+				});
+				
+				//태그들이 추가된 것을 확인한 후에 comment를 제거
+				$(".box").html(str);
+				$("form").submit();
+			});
+			
+		});//document ready
+		
+		
+		</script>
+</html>

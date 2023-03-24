@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="shop.ysh.shcom.domain.repository.ImgRepository">
+
+<!--<select id="findAll" resultType="shop.computerzone.main.domain.Test2">
+		select * from test order by mno desc
+	</select> -->
+	<insert id="save">
+		insert into img(i_name, i_path, product_p_num)
+		values(#{i_name}, #{i_path}, #{product_p_num})
+	</insert>
+	
+<!--<delete id="deleteById">
+		delete board
+		where bno=#{bno}
+	</delete>
+	
+	<update id="update">
+		update board
+		set subject=#{subject}, content=#{content}, updated_date=systimestamp
+		where bno=#{bno}
+	</update> -->
+ 
+</mapper>

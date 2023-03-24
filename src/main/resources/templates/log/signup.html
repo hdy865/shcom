@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form th:action="{@/shcom/signup}" th:method="post">
+		<ul>
+			<li>
+				<input type="email" name="m_email" placeholder="이메일을 입력하세요.">
+			</li>
+			<li>
+				<input type="password" name="m_password" placeholder="비밀번호를 입력하세요.">
+			</li>
+			<li>
+				<input type="text" name="m_name" placeholder="이름을 입력하세요">
+			</li>
+			<li>
+				<input type="text" name="m_phone" placeholder="전화번호를 입력하세요">
+			</li>
+			<li>
+				<input type="hidden" name="m_role" value="ROLE_USER">
+			</li>
+			<li>
+				<button>회원가입</button>
+			</li>
+		</ul>
+	</form>
+</body>
+</html>

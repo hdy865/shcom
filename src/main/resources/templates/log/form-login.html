@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form th:action="@{/login}" th:method="post">
+		<ul>
+			<li>
+				<input type="email" name="username" placeholder="이메일을 입력하세요.">
+			</li>
+			<li>
+				<input type="password" name="password" placeholder="비밀번호를 입력하세요.">
+			</li>
+			<li>
+				<button>로그인</button>
+			</li>
+		</ul>
+	</form>
+</body>
+</html>
