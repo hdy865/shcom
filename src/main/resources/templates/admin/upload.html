@@ -6,7 +6,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<form th:action="@{/admin/upload}" th:method="post" enctype='multipart/form-data'>
+	<form th:action="@{/admin/upload}" th:method="post">
 		<div>
 			<input type="text" name="p_name" placeholder="상품명">
 		</div>
@@ -17,16 +17,18 @@
 			<input type="text" name="p_cost" placeholder="상품가격">
 		</div>
 		<div>
-			<input type="file" class="custom-file-input" name="file" 
+			<input type="file" class="custom-file-input"
 			placeholder="이미지" multiple="multiple">
 		</div>
-		<div>
-		등록한 파일이 여기 보입니다.
+		<div class="uploadResult">
+			<ul>
+			
+			</ul>
 		</div>
-		<button>상품등록</button>
+		<button class="btn-primary">상품등록</button>
 	</form>
 </body>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script>
 		$(document).ready(function(e){
 			
@@ -83,10 +85,10 @@
 				
 				
 				
-				//실제 업로드 부분
+				//로컬 저장된 파일 불러오기
 				//upload ajax
 				$.ajax({
-					url: '/uploadAjax',
+					url: '/admin/uploadAjax',
 					processData: false,
 					contentType: false,
 					data: formData,
@@ -103,6 +105,7 @@
 				
 			});//change e
 			
+			//로컬 삭제
 			$(".uploadResult ").on("click", "li button", function(e){
 				
 				console.log("delete file");
@@ -112,7 +115,7 @@
 				var targetLi = $(this).closest("li");
 				
 				$.ajax({
-					url: '/removeFile',
+					url: '/upload/removeFile',
 					data: {fileName: targetFile},
 					dataType: 'text',
 					type: 'POST',
@@ -123,6 +126,7 @@
 				});//$.ajax
 			});
 			
+			//로컬 저장
 			function showResult(uploadResultArr) {
 				
 				var uploadUL = $(".uploadResult ul");
@@ -131,17 +135,17 @@
 				
 				$(uploadResultArr).each(function(i, obj){
 					
-					str += "<li data-name='"+obj.fileName+"' data-path='"+obj.folderPath+"' data-uuid='"+obj.uuid+"'>";
-					str += " <div>";
-					str += "<button type='button' data-file=\'" + obj.imageURL + "\'"
+					str += "<li data-i_name='"+obj.i_name+"' data-i_path='"+obj.i_path+"'>";
+					str += "<div>";
+					str += "<button type='button' data-file=\'" + obj.i_name + "\'"
 					str += "class='btn-warning btn-sm'>X</button><br>";
-					str += "<img src='/display?fileName=" + obj.thumbnailURL + "'>";
+					str += "<img src='/admin/display?fileName=" + obj.i_name + "'>";
 					str += "</div>";
 					str += "</li>";
 				});
 				uploadUL.append(str);
 			}
-			
+			//db저장
 			$(".btn-primary").on("click", function(e){
 				e.preventDefault();
 				
@@ -150,9 +154,8 @@
 				$(".uploadResult li").each(function(i, obj){
 					var target = $(obj);
 					
-					str +="<input type='hidden' name='imageDTOList["+i+"].imgName' value='"+target.data('name')+"'>";
-					str +="<input type='hidden' name='imageDTOList["+i+"].path' value='"+target.data('path')+"'>";
-					str +="<input type='hidden' name='imageDTOList["+i+"].uuid' value='"+target.data('uuid')+"'>";
+					str +="<input type='hidden' name='imgDTOList["+i+"].i_name' value='"+target.data('i_name')+"'>";
+					str +="<input type='hidden' name='imgDTOList["+i+"].i_path' value='"+target.data('i_path')+"'>";
 				});
 				
 				//태그들이 추가된 것을 확인한 후에 comment를 제거
